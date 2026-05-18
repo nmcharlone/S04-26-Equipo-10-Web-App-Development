@@ -8,4 +8,8 @@ export default class AuthController {
 		const token = this.AuthService.createToken(user)
 		res.json({ token })
 	}
+	async me(req, res) {
+		const user = req.user
+		res.json({ user })
+	}
 }
