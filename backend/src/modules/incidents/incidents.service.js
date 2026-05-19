@@ -1,4 +1,4 @@
-import { BadRequestError, ConflictError, } from "../../errors/errors.js"
+import { BadRequestError, ConflictError } from "../../errors/errors.js"
 
 export default class IncidentsService {
 	constructor(IncidentsRepository) {
@@ -19,13 +19,13 @@ export default class IncidentsService {
 
 		switch (Number(user.role_id)) {
 			case 1:
-				created_by = user.user_id
+				created_by = user.id
 				conditions.push("created_by = ?")
 				values.push(Number(created_by))
 				break
 
 			case 2:
-				assigned_to = user.user_id
+				assigned_to = user.id
 				conditions.push("assigned_to = ?")
 				values.push(Number(assigned_to))
 				break
@@ -64,6 +64,8 @@ export default class IncidentsService {
 	}
 	async getIncidents(user, query) {
 		const { conditions, values } = this.getFilters(user, query)
+		console.log(conditions)
+		console.log(values)
 
 		let whereClause = ""
 		if (conditions.length > 0) {
@@ -80,7 +82,8 @@ export default class IncidentsService {
 		const tech = await this.IncidentsRepository.getUserById(techId)
 		if (tech.role_id == 2 && tech.area_id == incident.area_id) {
 			await this.IncidentsRepository.assignTech(techId, incidentId)
-			const updatedIncident = await this.IncidentsRepository.getIncidentById(incidentId)
+			const updatedIncident =
+				await this.IncidentsRepository.getIncidentById(incidentId)
 			return updatedIncident
 		}
 		throw new BadRequestError("Technician and incident don´t match")
@@ -120,7 +123,7 @@ export default class IncidentsService {
 			throw new BadRequestError("Incident not found")
 		}
 
-		if (incident.assigned_to !== user.user_id) {
+		if (incident.assigned_to !== user.id) {
 			throw new BadRequestError("You are not assigned to this incident")
 		}
 

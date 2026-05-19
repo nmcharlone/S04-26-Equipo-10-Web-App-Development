@@ -34,20 +34,20 @@ INSERT OR IGNORE INTO root_cause (name) VALUES
 INSERT INTO users (name, lastname, password, role_id, area_id) VALUES
 -- Usuarios con contraseña hasheada (hash de "123456" generado con bcrypt) para probar el login
 -- Operadores
-('Juan', 'Perez', '$2b$10$1A/frCcD44z2Z.KElgYX6eDAQcjK8pIvhX8bpStpPZlDF.7mBE/uS', 1, 1),
+('Juan', 'Perez', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 1, 1),
 ('Maria', 'Gomez', '123456', 1, 4),
 
 -- Técnicos
-('Carlos', 'Ruiz', '$2b$10$1A/frCcD44z2Z.KElgYX6eDAQcjK8pIvhX8bpStpPZlDF.7mBE/uS', 2, 2),
+('Carlos', 'Ruiz', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 2, 2),
 ('Lucia', 'Fernandez', '123456', 2, 5),
 ('Diego', 'Martinez', '123456', 2, 2),
 
 -- Supervisores
-('Sofia', 'Lopez', '$2b$10$1A/frCcD44z2Z.KElgYX6eDAQcjK8pIvhX8bpStpPZlDF.7mBE/uS', 3, 1),
+('Sofia', 'Lopez', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 3, 1),
 ('Martin', 'Sanchez', '123456', 3, 3),
 
 -- Gerente
-('Laura', 'Diaz', '$2b$10$1A/frCcD44z2Z.KElgYX6eDAQcjK8pIvhX8bpStpPZlDF.7mBE/uS', 4, 1);
+('Laura', 'Diaz', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 4, 1);
 
 INSERT INTO incidents (
     type_id,
