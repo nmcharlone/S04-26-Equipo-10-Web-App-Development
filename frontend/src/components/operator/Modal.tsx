@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-
+import Input from "../../components/ui/Input";
 const TIPOS = [
   "Falla Eléctrica",
   "Falla Mecánica",
@@ -173,27 +173,13 @@ export default function Modal({ open, onClose, onSubmit }: ModalProps) {
 
           {/* Área */}
           <div>
-            <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
-              Área
-            </label>
-            <input
-              type="text"
-              placeholder="Producción"
-              value={area}
-              onChange={e => setArea(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px 14px",
-                border: "1.5px solid #d1d5db",
-                borderRadius: 8,
-                fontSize: 14,
-                color: "#111827",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-              onFocus={e => (e.currentTarget.style.borderColor = "#10b981")}
-              onBlur={e => (e.currentTarget.style.borderColor = "#d1d5db")}
-            />
+          <Input
+            label="Área"
+            placeholder="Producción"
+            value={area}
+            onChange={setArea}
+            required
+          />
           </div>
 
           {/* Descripción */}

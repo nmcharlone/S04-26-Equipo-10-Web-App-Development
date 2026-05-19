@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-
+import Input from "../../components/ui/Input";
 // --- tipos ---
 type Rol = "Operador" | "Operadora" | "Supervisor" | "Técnico" | "Técnica" | "Gerente";
 type Mode = "create" | "edit" | "delete";
@@ -148,10 +148,29 @@ export default function UserModal({ open, mode, initialData = {}, areas, onClose
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <Field label="Nombre"     value={form.nombre}     onChange={set("nombre")}     placeholder="Ej: Producción, Mantenimiento..." />
-          <Field label="Email"      value={form.email}      onChange={set("email")}      placeholder="Ej: Producción, Mantenimiento..." type="email" />
-          <Field label="Contraseña" value={form.contrasena} onChange={set("contrasena")} placeholder="Ej: Producción, Mantenimiento..." type="password" />
-
+<Input
+  label="Nombre"
+  value={form.nombre}
+  onChange={set("nombre")}
+  placeholder="Nombre del usuario"
+  required
+/>
+<Input
+  label="Email"
+  type="email"
+  value={form.email}
+  onChange={set("email")}
+  placeholder="correo@ejemplo.com"
+  required
+/>
+<Input
+  label="Contraseña"
+  type="password"
+  value={form.contrasena}
+  onChange={set("contrasena")}
+  placeholder="Contraseña"
+  required
+/>
           {/* Rol + Área en fila */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import Input from "../../components/ui/Input";
 
-const MOCK_USERS: Record<string, { password: string; name: string; role: "operator" | "supervisor" | "technician" | "manager" }> = {
+const MOCK_USERS: Record<string, { password: string; name: string; role: string }> = {
   "operator@example.com":   { password: "123", name: "Operador Demo", role: "operator" },
   "supervisor@example.com": { password: "123", name: "Supervisor Demo", role: "supervisor" },
   "technician@example.com": { password: "123", name: "Técnico Demo", role: "technician" },
@@ -29,8 +30,7 @@ export default function Login() {
       return;
     }
 
-    login({ name: user.name, role: user.role });
-
+    login({ name: user.name, role: user.role as any });
     const roleToPath: Record<string, string> = {
       operator: "/operator",
       supervisor: "/supervisor",
@@ -42,34 +42,18 @@ export default function Login() {
 
   return (
     <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minHeight: "100vh",
-      fontFamily: "Inter, sans-serif",
-      background: "#f3f4f6",
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", minHeight: "100vh",
+      fontFamily: "Inter, sans-serif", background: "#f3f4f6",
     }}>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          background: "#fff",
-          padding: "32px",
-          borderRadius: 12,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-          width: 340,
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-        }}
-      >
-        {/* Logo + nombre de la aplicación */}
+      <form onSubmit={handleSubmit} style={{
+        background: "#fff", padding: "32px", borderRadius: 12,
+        boxShadow: "0 4px 16px rgba(0,0,0,0.10)", width: 340,
+        display: "flex", flexDirection: "column", gap: 16,
+      }}>
+        {/* Logo + nombre */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", marginBottom: 8 }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 10,
-            background: "#10b981",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#10b981", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <span style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>O</span>
           </div>
           <span style={{ color: "#111827", fontSize: 22, fontWeight: 700 }}>OpsCore</span>
@@ -82,55 +66,23 @@ export default function Login() {
           Ingresá tus credenciales
         </p>
 
-        <div>
-          <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
-            Email
-          </label>
-          <input
-            type="email"
-            placeholder="correo@ejemplo.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{
-              width: "100%",
-              padding: "10px 14px",
-              border: "1.5px solid #d1d5db",
-              borderRadius: 8,
-              fontSize: 14,
-              color: "#111827",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#10b981")}
-            onBlur={(e) => (e.currentTarget.style.borderColor = "#d1d5db")}
-          />
-        </div>
+        <Input
+          label="Email"
+          type="email"
+          placeholder="correo@ejemplo.com"
+          value={email}
+          onChange={setEmail}
+          required
+        />
 
-        <div>
-          <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
-            Contraseña
-          </label>
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{
-              width: "100%",
-              padding: "10px 14px",
-              border: "1.5px solid #d1d5db",
-              borderRadius: 8,
-              fontSize: 14,
-              color: "#111827",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#10b981")}
-            onBlur={(e) => (e.currentTarget.style.borderColor = "#d1d5db")}
-          />
-        </div>
+        <Input
+          label="Contraseña"
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={setPassword}
+          required
+        />
 
         {error && (
           <div style={{ color: "#ef4444", fontSize: 13, textAlign: "center", fontWeight: 500 }}>
@@ -138,20 +90,11 @@ export default function Login() {
           </div>
         )}
 
-        <button
-          type="submit"
-          style={{
-            padding: "10px 0",
-            border: "none",
-            borderRadius: 8,
-            background: "#111827",
-            color: "#fff",
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: "pointer",
-            marginTop: 4,
-          }}
-        >
+        <button type="submit" style={{
+          padding: "10px 0", border: "none", borderRadius: 8,
+          background: "#111827", color: "#fff", fontSize: 14,
+          fontWeight: 600, cursor: "pointer", marginTop: 4,
+        }}>
           Ingresar
         </button>
 

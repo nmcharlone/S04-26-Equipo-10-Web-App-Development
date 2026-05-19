@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import Input from "../../components/ui/Input";
 interface AreaModalProps {
   open: boolean;
   mode: "add" | "edit";
@@ -40,22 +40,13 @@ export default function AreaModal({ open, mode, initialValue = "", onClose, onSu
 
         {/* Campo */}
         <div>
-          <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
-            Nombre del área
-          </label>
-          <input
-            type="text"
-            placeholder="Ej: Producción, Mantenimiento..."
-            value={nombre}
-            onChange={e => setNombre(e.target.value)}
-            style={{
-              width: "100%", padding: "10px 14px",
-              border: "1.5px solid #10b981", borderRadius: 8,
-              fontSize: 14, color: "#111827", outline: "none", boxSizing: "border-box",
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = "#10b981")}
-            onBlur={e => (e.currentTarget.style.borderColor = "#d1d5db")}
-          />
+        <Input
+          label="Nombre del área"
+          placeholder="Ej: Producción, Mantenimiento..."
+          value={nombre}
+          onChange={setNombre}
+          required
+        />
         </div>
 
         {/* Footer */}
