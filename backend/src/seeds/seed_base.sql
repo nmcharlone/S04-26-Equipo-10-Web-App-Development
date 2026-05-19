@@ -32,7 +32,7 @@ INSERT OR IGNORE INTO root_cause (name) VALUES
 ('NETWORK_ISSUE');
 
 INSERT INTO users (name, lastname, password, role_id, area_id) VALUES
-
+-- Usuarios con contraseña hasheada (hash de "123456" generado con bcrypt) para probar el login
 -- Operadores
 ('Juan', 'Perez', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 1, 1),
 ('Maria', 'Gomez', '123456', 1, 4),
