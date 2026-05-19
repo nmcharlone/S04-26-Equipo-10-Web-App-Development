@@ -1,4 +1,4 @@
-INSERT OR IGNORE INTO roles (name) VALUES
+INSERT OR IGNORE INTO roles (id, name) VALUES
 (1, 'OPERATOR'),
 (2, 'TECHNICIAN'),
 (3, 'SUPERVISOR'),
@@ -11,14 +11,7 @@ INSERT OR IGNORE INTO status (id, name) VALUES
 (4, 'SOLVED'),
 (5, 'CLOSED');
 
-INSERT OR IGNORE INTO priorities (id, name) VALUES
-(1, 'HIGH'),
-(2, 'MEDIUM'),
-(3, 'LOW'),
-(4, 'UNASSIGNED');
-
-
-INSERT OR IGNORE INTO areas (id, name) VALUES
+INSERT OR IGNORE INTO areas (name) VALUES
 ('IT'),
 ('HR'),
 ('FINANCE'),
@@ -28,12 +21,12 @@ INSERT OR IGNORE INTO areas (id, name) VALUES
 ('LOGISTIC');
 
 
-INSERT OR IGNORE INTO types (id, name) VALUES
+INSERT OR IGNORE INTO types (name) VALUES
 ('HARDWARE'),
 ('SOFTWARE'),
 ('NETWORK');
 
-INSERT OR IGNORE INTO root_cause (id, name) VALUES
+INSERT OR IGNORE INTO root_cause (name) VALUES
 ('USER_ERROR'),
 ('SYSTEM_FAILURE'),
 ('NETWORK_ISSUE');
@@ -41,20 +34,20 @@ INSERT OR IGNORE INTO root_cause (id, name) VALUES
 INSERT INTO users (name, lastname, password, role_id, area_id) VALUES
 
 -- Operadores
-('Juan', 'Perez', '123456', 1, 1),
+('Juan', 'Perez', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 1, 1),
 ('Maria', 'Gomez', '123456', 1, 4),
 
 -- Técnicos
-('Carlos', 'Ruiz', '123456', 2, 2),
+('Carlos', 'Ruiz', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 2, 2),
 ('Lucia', 'Fernandez', '123456', 2, 5),
 ('Diego', 'Martinez', '123456', 2, 2),
 
 -- Supervisores
-('Sofia', 'Lopez', '123456', 3, 1),
+('Sofia', 'Lopez', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 3, 1),
 ('Martin', 'Sanchez', '123456', 3, 3),
 
 -- Gerente
-('Laura', 'Diaz', '123456', 4, 1);
+('Laura', 'Diaz', '$2b$10$y5GVf9wpTOBDBJEqWjIx0OLaZZCqu2Dnpai5/Ki2S2BiYwguRcACm', 4, 1);
 
 INSERT INTO incidents (
     type_id,

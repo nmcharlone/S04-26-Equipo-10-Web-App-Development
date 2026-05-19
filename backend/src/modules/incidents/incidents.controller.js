@@ -27,7 +27,7 @@ export default class IncidentsController {
 			type_id,
 			area_id,
 			description,
-			created_by: user.user_id,
+			created_by: user.id,
 		})
 
 		return res.status(201).json(incident)
@@ -47,10 +47,14 @@ export default class IncidentsController {
 	async startIncident(req, res) {
 		const { id } = req.params
 
-		const incident = await this.IncidentsService.startIncident(Number(id),req.user,)
+		const incident = await this.IncidentsService.startIncident(
+			Number(id),
+			req.user,
+		)
 
 		res.json({
-			msg: "Incident started successfully",incident,
+			msg: "Incident started successfully",
+			incident,
 		})
 	}
 }

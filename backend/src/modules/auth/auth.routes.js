@@ -4,7 +4,7 @@ import AuthController from "./auth.controller.js"
 import AuthService from "./auth.service.js"
 import AuthRepository from "./auth.repository.js"
 import { asyncHandler } from "../../middlewares/asyncHandler.middleware.js"
-import requireAuth from "../../middlewares/auth.middleware.js"
+import { requireAuth } from "../../middlewares/auth.middleware.js"
 
 const router = express.Router()
 const authRepository = new AuthRepository(db)

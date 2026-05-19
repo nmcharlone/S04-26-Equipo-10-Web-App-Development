@@ -8,7 +8,10 @@ export default class AuthService {
 	}
 
 	async validateUser(name, lastname, password) {
+		// console.log(await bcrypt.hash(password, 10))
 		const user = await this.AuthRepository.findUser(name, lastname)
+		console.log(user)
+
 		if (!user) {
 			throw new NotFoundError("User not found")
 		}
