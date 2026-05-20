@@ -1,19 +1,26 @@
 import { useNavigate } from "react-router-dom";
+import { Activity, LogOut } from "lucide-react";
 
 interface NavLink {
   label: string;
-  path: string;      // ruta a la que navega, ej. "/manager/users"
-  active: boolean;   // true si está activo
+  path: string;
+  active: boolean;
 }
 
 interface HeaderProps {
   userName: string;
   userRole: string;
-  navLinks?: NavLink[];   // si no se pasan, no se muestra barra de navegación
+  navLinks?: NavLink[];
+  onLogout?: () => void;
 }
 
-export default function Header({ userName, userRole, navLinks }: HeaderProps) {
+export default function Header({ userName, userRole, navLinks, onLogout }: HeaderProps) {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (onLogout) onLogout();
+    navigate("/login");
+  };
 
   return (
     <nav style={{
@@ -24,9 +31,8 @@ export default function Header({ userName, userRole, navLinks }: HeaderProps) {
       padding: "0 24px",
       height: 64,
     }}>
-      {/* Logo + navegación */}
       <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-        {/* Logo clicable (va a home) */}
+        {/* Logo */}
         <button
           onClick={() => navigate("/")}
           style={{
@@ -39,15 +45,15 @@ export default function Header({ userName, userRole, navLinks }: HeaderProps) {
             background: "#10b981",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <span style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>O</span>
+            <Activity size={22} color="#fff" />
           </div>
           <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>OpsCore</span>
         </button>
 
-        {/* Links de navegación (solo si existen) */}
-        {navLinks && navLinks.length > 0 && (
+        {/* Navegación interna */}
+        {navLinks && (
           <div style={{ display: "flex", gap: 8 }}>
-            {navLinks.map((link) => (
+            {navLinks.map(link => (
               <button
                 key={link.label}
                 onClick={() => navigate(link.path)}
@@ -58,7 +64,6 @@ export default function Header({ userName, userRole, navLinks }: HeaderProps) {
                   padding: "4px 8px",
                   borderBottom: link.active ? "2px solid #10b981" : "2px solid transparent",
                   transition: "all 0.2s",
-                  whiteSpace: "nowrap",
                 }}
               >
                 {link.label}
@@ -68,24 +73,20 @@ export default function Header({ userName, userRole, navLinks }: HeaderProps) {
         )}
       </div>
 
-      {/* Info de usuario */}
+      {/* Usuario + logout */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{ textAlign: "right" }}>
           <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{userName}</div>
           <div style={{ color: "#9ca3af", fontSize: 12 }}>{userRole}</div>
         </div>
         <button
+          onClick={handleLogout}
           style={{
             background: "none", border: "none", cursor: "pointer",
-            color: "#9ca3af", fontSize: 20, display: "flex", alignItems: "center",
-          }}
-          title="Cerrar sesión"
-          onClick={() => {
-            // Aquí luego agregarás lógica de logout
-            console.log("Logout");
+            display: "flex", alignItems: "center", padding: 0,
           }}
         >
-          ⎋
+          <LogOut size={20} color="#9ca3af" />
         </button>
       </div>
     </nav>

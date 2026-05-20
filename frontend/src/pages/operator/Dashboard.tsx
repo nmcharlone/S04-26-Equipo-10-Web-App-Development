@@ -1,37 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../../components/layout/simple/Header";
 import EstadoBadge from "../../components/ui/EstadoBadge";
 import PrioridadBadge from "../../components/ui/PrioridadBadge";
 import Modal from "../../components/operator/Modal";
+import { getReportes } from "../../services/reportesService";
+import type { Reporte } from "../../services/reportesService";
+import { Plus } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
-// --- mock data ---
-const mockAreaReports = [
-  { id: 1, operator: "Sara Martínez", estado: "Abierto", prioridad: "Alta", tipo: "Falla eléctrica", descripcion: "Motor de la banda transportadora no enciende. Se escuchó un sonido de chispa antes de apagarse.", area: "Producción", fecha: "28/04/2026", hora: "08:30" },
-  { id: 2, operator: "Marcos Nodal", estado: "Asignado", prioridad: "Media", tipo: "Sobrecalentamiento", descripcion: "Temperatura elevada en el panel de control de la línea 3.", area: "Producción", fecha: "24/04/2026", hora: "11:21" },
-  { id: 3, operator: "Elena Rodríguez", estado: "En proceso", prioridad: "Baja", tipo: "Vibración Excesiva", descripcion: "Vibración anormal en bomba de enfriamiento. Se detectó durante la inspección matutina.", area: "Producción", fecha: "21/04/2026", hora: "07:47" },
-];
-
-const mockMyReports = [
-  { id: 4, operator: "Alex Sterling", estado: "Abierto", prioridad: "Alta", tipo: "Falla eléctrica", descripcion: "Motor de la banda transportadora no enciende. Se escuchó un sonido de chispa antes de apagarse.", area: "Producción", fecha: "28/04/2026", hora: "08:30" },
-  { id: 5, operator: "Alex Sterling", estado: "Asignado", prioridad: "Media", tipo: "Sobrecalentamiento", descripcion: "Temperatura elevada en el panel de control de la línea 3.", area: "Producción", fecha: "24/04/2026", hora: "11:21" },
-  { id: 6, operator: "Alex Sterling", estado: "En proceso", prioridad: "Baja", tipo: "Vibración Excesiva", descripcion: "Vibración anormal en bomba de enfriamiento. Se detectó durante la inspección matutina.", area: "Producción", fecha: "21/04/2026", hora: "07:47" },
-];
-
-// --- página ---
-export default function OperatorDashboard() {
+export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("area");
+  const [reportes, setReportes] = useState<Reporte[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const reports = activeTab === "area" ? mockAreaReports : mockMyReports;
+  const { logout } = useAuth();
+
+  useEffect(() => {
+    getReportes().then(setReportes).catch(console.error);
+  }, []);
+
+  // Simular separación por "área" y "mis reportes" (mockeado con un campo operator)
+  const areaReports = reportes; // todos los reportes como "área"
+  const myReports = reportes.filter(r => r.operator === "Alex Sterling"); // suponemos que el operador actual es Alex
+
+  const reports = activeTab === "area" ? areaReports : myReports;
 
   const handleNewReport = (data: { tipo: string; area: string; descripcion: string }) => {
     console.log("Nuevo reporte:", data);
-    // Acá podrías agregar el reporte a la lista mock o enviar a backend
     setModalOpen(false);
   };
 
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
-      <Header name="Alex Sterling" role="Operador" onLogout={() => console.log("logout")} />
+      <Header name="Alex Sterling" role="Operador" onLogout={logout} />
 
       <div style={{ padding: "32px 32px 0" }}>
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 24 }}>
@@ -43,7 +43,8 @@ export default function OperatorDashboard() {
               fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
             }}
           >
-            <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> Reportar
+              <Plus size={18} style={{ marginRight: 4 }} />
+              Reportar
           </button>
         </div>
 
@@ -93,7 +94,6 @@ export default function OperatorDashboard() {
         </div>
       </div>
 
-      {/* Modal */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

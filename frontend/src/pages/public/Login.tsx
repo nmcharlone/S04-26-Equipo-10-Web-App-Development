@@ -2,13 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../../components/ui/Input";
-
-const MOCK_USERS: Record<string, { password: string; name: string; role: string }> = {
-  "operator@example.com":   { password: "123", name: "Operador Demo", role: "operator" },
-  "supervisor@example.com": { password: "123", name: "Supervisor Demo", role: "supervisor" },
-  "technician@example.com": { password: "123", name: "Técnico Demo", role: "technician" },
-  "manager@example.com":    { password: "123", name: "Manager Demo", role: "manager" },
-};
+import { login as loginService } from "../../services/authService";
+import { Activity, LogIn } from "lucide-react";
 
 export default function Login() {
   const { login } = useAuth();
@@ -18,26 +13,31 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const normalizedEmail = email.trim().toLowerCase();
-    const user = MOCK_USERS[normalizedEmail];
+    try {
+      // Usamos el servicio mockeado (o real cuando se active)
+      const response = await loginService({ email, password });
 
-    if (!user || user.password !== password) {
-      setError("Credenciales inválidas.");
-      return;
+      // Guardamos el token en localStorage
+      localStorage.setItem("token", response.token);
+
+      // Actualizamos el contexto de autenticación (solo con name y role, como espera)
+      login({ name: response.user.name, role: response.user.role });
+
+      // Redirigimos según el rol
+      const roleToPath: Record<string, string> = {
+        operator: "/operator",
+        supervisor: "/supervisor",
+        technician: "/technician",
+        manager: "/manager",
+      };
+      navigate(roleToPath[response.user.role] || "/operator");
+    } catch (err: any) {
+      setError(err.message || "Error al iniciar sesión");
     }
-
-    login({ name: user.name, role: user.role as any });
-    const roleToPath: Record<string, string> = {
-      operator: "/operator",
-      supervisor: "/supervisor",
-      technician: "/technician",
-      manager: "/manager",
-    };
-    navigate(roleToPath[user.role]);
   };
 
   return (
@@ -53,8 +53,8 @@ export default function Login() {
       }}>
         {/* Logo + nombre */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", marginBottom: 8 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#10b981", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>O</span>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: "#10b981", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Activity size={28} color="#fff" />
           </div>
           <span style={{ color: "#111827", fontSize: 22, fontWeight: 700 }}>OpsCore</span>
         </div>
@@ -94,10 +94,12 @@ export default function Login() {
           padding: "10px 0", border: "none", borderRadius: 8,
           background: "#111827", color: "#fff", fontSize: 14,
           fontWeight: 600, cursor: "pointer", marginTop: 4,
+          display: "flex", alignItems: "center", justifyContent: "center",
         }}>
+          <LogIn size={18} style={{ marginRight: 6 }} />
           Ingresar
         </button>
-
+        
         <details style={{ fontSize: 12, color: "#6b7280", textAlign: "center", marginTop: 8 }}>
           <summary style={{ cursor: "pointer", fontWeight: 500 }}>
             Credenciales de prueba

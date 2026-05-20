@@ -1,66 +1,56 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../../components/layout/simple/Header";
 import EstadoBadge from "../../components/ui/EstadoBadge";
 import PrioridadBadge from "../../components/ui/PrioridadBadge";
-import EditReportModal from "../../components/technician/EditReportModal ";
+import EditReportModal from "../../components/technician/EditReportModal";
+import { getReportes } from "../../services/reportesService";
+import type { Reporte } from "../../services/reportesService";
+import { Pencil } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
-// --- tipos ---
-type Estado = "Abierto" | "Asignado" | "En proceso" | "Cerrado";
-type Prioridad = "Alta" | "Media" | "Baja";
-
-interface Reporte {
-  id: number;
-  operator: string;
-  estado: Estado;
-  prioridad: Prioridad;
-  tipo: string;
-  descripcion: string;
-  area: string;
-  fecha: string;
-  hora: string;
-  tecnico: string;
-}
-
-// --- mock data (solo los asignados a este técnico) ---
-const mockReportes: Reporte[] = [
-  { id: 1, operator: "Marcos Nodal", estado: "Asignado", prioridad: "Media", tipo: "Sobrecalentamiento", descripcion: "Temperatura elevada en el panel de control de la línea 3.", area: "Producción", fecha: "24/04/2026", hora: "11:21", tecnico: "Miguel Torres" },
-  { id: 2, operator: "Elena Rodríguez", estado: "En proceso", prioridad: "Baja", tipo: "Vibración Excesiva", descripcion: "Vibración anormal en bomba de enfriamiento. Se detectó durante la inspección matutina.", area: "Producción", fecha: "21/04/2026", hora: "07:47", tecnico: "Miguel Torres" },
-];
-
-// --- página ---
-export default function TechnicianPage() {
-  const [reportes, setReportes] = useState<Reporte[]>(mockReportes);
-
-  // Estado del modal
+export default function Dashboard() {
+  const [reportes, setReportes] = useState<Reporte[]>([]);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<Reporte | null>(null);
+  const { logout } = useAuth();
 
-  // Abrir modal para un reporte específico
+  useEffect(() => {
+    getReportes()
+      .then(data => {
+        // Filtramos los asignados al técnico actual (mock: Miguel Torres)
+        const tecnicos = data.filter(r => r.tecnico === "Miguel Torres");
+        setReportes(tecnicos);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
   const openEditModal = (reporte: Reporte) => {
     setSelectedReport(reporte);
     setModalOpen(true);
   };
 
-  // Manejar envío del modal
   const handleEditSubmit = (data: { estado: string }) => {
     if (!selectedReport) return;
     setReportes(prev =>
       prev.map(r =>
         r.id === selectedReport.id
-          ? { ...r, estado: data.estado as Estado }
+          ? { ...r, estado: data.estado }
           : r
       )
     );
     setModalOpen(false);
   };
 
+  if (loading) return <div style={{ padding: 32 }}>Cargando incidentes...</div>;
+
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
-      <Header name="Miguel Torres" role="Técnico" onLogout={() => console.log("logout")} />
+      <Header name="Miguel Torres" role="Técnico" onLogout={logout} />
 
       <div style={{ padding: "32px 32px 0" }}>
         <div style={{ background: "#fff", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
-          {/* Header tabla */}
           <div style={{ background: "#10b981", padding: "14px 20px" }}>
             <span style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Incidentes asignados</span>
           </div>
@@ -70,9 +60,7 @@ export default function TechnicianPage() {
               <thead>
                 <tr style={{ background: "#7BC6B1" }}>
                   {["OPERADOR", "ESTADO", "PRIORIDAD", "TIPO", "DESCRIPCIÓN", "ÁREA", "FECHA", "HORA", "TÉCNICO ASIGNADO", "ACCIONES"].map(col => (
-                    <th key={col} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
-                      {col}
-                    </th>
+                    <th key={col} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{col}</th>
                   ))}
                 </tr>
               </thead>
@@ -103,8 +91,8 @@ export default function TechnicianPage() {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        Editar estado
-                      </button>
+                      <Pencil size={14} style={{ marginRight: 4 }} /> Editar estado
+                    </button>
                     </td>
                   </tr>
                 ))}
@@ -114,7 +102,6 @@ export default function TechnicianPage() {
         </div>
       </div>
 
-      {/* Modal de edición */}
       <EditReportModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
