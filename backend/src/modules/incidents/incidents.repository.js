@@ -43,12 +43,12 @@ export default class IncidentsRepository {
 	async assignTech(techId, incidentId) {
 		const query = `
 		UPDATE incidents 
-		SET assigned_to = ?
+		SET assigned_to = ?, status_id = 2
 		WHERE id = ?
 		`
 
 		return new Promise((resolve, reject) => {
-			this.db.run(query, [techId, incidentId], (err, row) => {
+			this.db.run(query, [techId, incidentId], function (err) {
 				if (err) return reject(err)
 				resolve({ changes: this.changes })
 			})
@@ -112,10 +112,22 @@ export default class IncidentsRepository {
 	async resolveIncident(id, user) {
 		return new Promise((resolve, reject) => {
 			this.db.run(
-				`UPDATE incidents SET closed_by = ?, closed_at = CURRENT_TIMESTAMP `,
-				Number(user.id),
+				`UPDATE incidents SET closed_by = ?, closed_at = CURRENT_TIMESTAMP WHERE id = ? `,
+				[Number(user.user_id),id],
 				function (err) {
-					if (err) reject(err)
+					if (err) return reject(err)
+					resolve({ changes: this.changes })
+				},
+			)
+		})
+	}
+	async startIncident(incidentId) {
+		return new Promise((resolve, reject) => {
+			this.db.run(
+				`UPDATE incidents SET status_id = ? WHERE id = ? `,
+				[3, incidentId],
+				function (err) {
+					if (err) return reject(err)
 					resolve({ changes: this.changes })
 				},
 			)

@@ -8,6 +8,7 @@ import incidentTypesRoutes from "./modules/incident-types/incident-types.routes.
 import statusesRoutes from "./modules/statuses/statuses.routes.js"
 import rolesRoutes from "./modules/roles/roles.routes.js"
 import usersRoutes from "./modules/users/users.routes.js"
+import metricsRoutes from "./modules/metrics/metrics.routes.js"
 
 const router = express.Router()
 
@@ -18,6 +19,7 @@ router.use("/catalogs/areas", areasRoutes)
 router.use("/catalogs/incident-types", incidentTypesRoutes)
 router.use("/catalogs/statuses", statusesRoutes)
 router.use("/catalogs/roles", rolesRoutes)
+router.use("/metrics", metricsRoutes)
 
 router.use("/users", usersRoutes)
 

@@ -12,7 +12,7 @@ export default class IncidentsController {
 	async assignIncident(req, res) {
 		const { technician_id } = req.body
 		const { id } = req.params
-		incident = await this.IncidentsService.assignTechnician(
+		const incident = await this.IncidentsService.assignTechnician(
 			Number(technician_id),
 			Number(id),
 		)
@@ -27,14 +27,13 @@ export default class IncidentsController {
 			type_id,
 			area_id,
 			description,
-			created_by: user.user_id,
+			created_by: user.id,
 		})
 
 		return res.status(201).json(incident)
 	}
 	async resolveIncident(req, res) {
 		const { id } = req.params
-		const { user } = req.user
 		const { solution, root_cause_id } = req.body
 		await this.IncidentsService.resolveIncident(Number(id), req.user)
 		const incident = await this.IncidentsService.findIncidentById(Number(id))
@@ -44,5 +43,18 @@ export default class IncidentsController {
 			root_cause_id,
 		)
 		res.status(201).json({ incident, resolution })
+	}
+	async startIncident(req, res) {
+		const { id } = req.params
+
+		const incident = await this.IncidentsService.startIncident(
+			Number(id),
+			req.user,
+		)
+
+		res.json({
+			msg: "Incident started successfully",
+			incident,
+		})
 	}
 }
