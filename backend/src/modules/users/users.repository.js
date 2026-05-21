@@ -3,31 +3,19 @@ export default class UsersRepository {
 		this.db = db
 	}
 
-	async listUsers() {
+	listUsers() {
 		const query = `
-			SELECT id, name, lastname, role_id, area_id
-			FROM users
-			ORDER BY id ASC
-		`
+		SELECT id, name, lastname, role_id, area_id
+		FROM users
+		ORDER BY id ASC
+	`
 
-		return new Promise((resolve, reject) => {
-			this.db.all(query, [], (err, rows) => {
-				if (err) return reject(err)
-
-				resolve(rows || [])
-			})
-		})
+		return this.db.prepare(query).all()
 	}
 
-	async getUserById(id) {
+	getUserById(id) {
 		const query = `SELECT * FROM users WHERE id = ?`
 
-		return new Promise((resolve, reject) => {
-			this.db.get(query, [id], (err, row) => {
-				if (err) return reject(err)
-
-				resolve(row || null)
-			})
-		})
+		return this.db.prepare(query).get(id)
 	}
 }
