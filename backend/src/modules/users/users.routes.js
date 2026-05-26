@@ -5,7 +5,7 @@ import UsersRepository from "./users.repository.js"
 import UsersService from "./users.service.js"
 import UsersController from "./users.controller.js"
 
-import { requireAuth } from "../../middlewares/auth.middleware.js"
+import { requireAuth, requireRole } from "../../middlewares/auth.middleware.js"
 import { asyncHandler } from "../../middlewares/asyncHandler.middleware.js"
 
 const router = express.Router()
@@ -25,5 +25,16 @@ router.get(
 	requireAuth,
 	asyncHandler(controller.getUserById.bind(controller)),
 )
-
+router.post(
+	"/",
+	requireAuth,
+	requireRole(4),
+	asyncHandler(controller.createUser.bind(controller)),
+)
+router.patch(
+	"/:id",
+	requireAuth,
+	requireRole(4),
+	asyncHandler(controller.updateUser.bind(controller)),
+)
 export default router
