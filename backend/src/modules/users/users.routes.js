@@ -31,4 +31,10 @@ router.post(
 	requireRole(4),
 	asyncHandler(controller.createUser.bind(controller)),
 )
+router.patch(
+	"/:id",
+	requireAuth,
+	requireRole(4),
+	asyncHandler(controller.updateUser.bind(controller)),
+)
 export default router
