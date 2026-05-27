@@ -2,7 +2,8 @@
 import express from "express"
 
 // Importamos el router principal (todas las rutas)
-import routes from "./routes/index.js"
+import routes from "./index.js"
+import { errorHandler } from "./middlewares/errorHandler.middleware.js"
 
 const app = express()
 
@@ -12,12 +13,5 @@ app.use(express.json())
 //prefijo global de api
 app.use("/api", routes)
 
-app.use((err, req, res, next) => {
-	console.error("Error:", err)
-
-	res.status(err.status || 500).json({
-		error: "Internal Server Error",
-		message: err.message || "Unexpected error",
-	})
-})
+app.use(errorHandler)
 export default app

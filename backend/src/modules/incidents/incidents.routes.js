@@ -1,15 +1,56 @@
 import express from "express"
 import db from "../../config/db.js"
-import IncidentsController from "./auth.controller.js"
-import IncidentsService from "./auth.service.js"
-import IncidentsRepository from "./auth.repository.js"
-import requireAuth from "../../middlewares/auth.middleware.js"
+import IncidentsController from "./incidents.controller.js"
+import IncidentsService from "./incidents.service.js"
+import IncidentsRepository from "./incidents.repository.js"
+import ResolutionsService from "../resolutions/resolutions.service.js"
+import ResolutionsRepository from "../resolutions/resolutions.repository.js"
+import { requireAuth, requireRole } from "../../middlewares/auth.middleware.js"
+import { asyncHandler } from "../../middlewares/asyncHandler.middleware.js"
 
 const router = express.Router()
+
 const incidentsRepository = new IncidentsRepository(db)
 const incidentsService = new IncidentsService(incidentsRepository)
-const incidentsController = new IncidentsController(incidentsService)
 
-router.get("/incidents", requireAuth, incidentsController.getIncidents)
+const resolutionsRepository = new ResolutionsRepository(db)
+const resolutionsService = new ResolutionsService(resolutionsRepository)
+
+const incidentsController = new IncidentsController(
+	incidentsService,
+	resolutionsService,
+)
+
+router.patch(
+	"/:id/assign",
+	requireAuth,
+	requireRole(3, 4),
+	asyncHandler(incidentsController.assignIncident.bind(incidentsController)),
+)
+
+router.patch(
+	"/:id/resolve",
+	requireAuth,
+	requireRole(3, 4),
+	asyncHandler(incidentsController.resolveIncident.bind(incidentsController)),
+)
+
+router.patch(
+	"/:id/start",
+	requireAuth,
+	requireRole(2),
+	asyncHandler(incidentsController.startIncident.bind(incidentsController)),
+)
+router.get(
+	"/",
+	requireAuth,
+	asyncHandler(incidentsController.getIncidents.bind(incidentsController)),
+)
+
+router.post(
+	"/",
+	requireAuth,
+	asyncHandler(incidentsController.createIncident.bind(incidentsController)),
+)
 
 export default router

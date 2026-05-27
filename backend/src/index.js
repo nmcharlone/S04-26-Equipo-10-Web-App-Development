@@ -1,23 +1,30 @@
+import "dotenv/config"
 import express from "express"
 
-// rutas de cada modulo (cada modulo es un router)
-import incidentRoutes from "./modules/incident/incident.routes.js"
-import userRoutes from "./modules/user/user.routes.js"
-import resolutionRoutes from "./modules/resolution/resolution.routes.js"
-import metricsRoutes from "./modules/metrics/metrics.routes.js"
+import incidentsRoutes from "./modules/incidents/incidents.routes.js"
 import authRoutes from "./modules/auth/auth.routes.js"
+import areasRoutes from "./modules/areas/areas.routes.js"
+import incidentTypesRoutes from "./modules/incident-types/incident-types.routes.js"
+import statusesRoutes from "./modules/statuses/statuses.routes.js"
+import rolesRoutes from "./modules/roles/roles.routes.js"
+import rootCausesRoutes from "./modules/root-causes/root-causes.routes.js"
+import usersRoutes from "./modules/users/users.routes.js"
+import metricsRoutes from "./modules/metrics/metrics.routes.js"
 
 const router = express.Router()
 
-//usar los routers con las rutas de los modulos
-router.use("/incidents", incidentRoutes)
-router.use("/users", userRoutes)
-router.use("/areas", areaRoutes)
-router.use("/resolutions", resolutionRoutes)
-router.use("/metrics", metricsRoutes)
+router.use("/incidents", incidentsRoutes)
 router.use("/auth", authRoutes)
 
-// check de estado de la api
+router.use("/catalogs/areas", areasRoutes)
+router.use("/catalogs/incident-types", incidentTypesRoutes)
+router.use("/catalogs/statuses", statusesRoutes)
+router.use("/catalogs/roles", rolesRoutes)
+router.use("/catalogs/root-causes", rootCausesRoutes)
+router.use("/metrics", metricsRoutes)
+
+router.use("/users", usersRoutes)
+
 router.get("/health", (req, res) => {
 	res.status(200).json({
 		status: "ok",
