@@ -19,9 +19,9 @@ export default function AssignTechnicianModal({ open, onClose, onSubmit, tecnico
 
   if (!open) return null;
 
-  // Filtramos técnicos que pertenezcan a la misma área (si tuviéramos area_id en el técnico)
-  // Por ahora asumimos que todos los técnicos están en el área del incidente
-  const tecnicosDisponibles = tecnicos; // idealmente filtrar por area_id del técnico
+  // Filtramos técnicos que pertenezcan a la misma área si tuviéramos esa información.
+  // Por ahora, mostramos todos los técnicos. El backend se encarga de validar.
+  const tecnicosDisponibles = tecnicos;
 
   const handleSubmit = () => {
     if (selectedId === null) return;

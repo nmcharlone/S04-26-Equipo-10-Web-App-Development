@@ -6,7 +6,6 @@ export interface Usuario {
   lastname: string;
   role_id: number;
   area_id: number;
-  active: boolean;
 }
 
 export async function getUsuarios(): Promise<{ users: Usuario[] }> {
