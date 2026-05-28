@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/layout/manager/Header";
+import Header from "../../components/layout/simple/Header";
 import BarChart from "../../components/charts/BarChart";
 import KpiGrid from "../../components/charts/KpiGrid";
 import EstadoBadge from "../../components/ui/EstadoBadge";
@@ -124,8 +124,7 @@ export default function ManagerPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
-      <Header userName="Laura Díaz" userRole="Gerente" navLinks={navLinks} onLogout={logout} />
-
+    <Header />
       <div style={{ padding: "32px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#111827" }}>Métricas de reportes</h2>

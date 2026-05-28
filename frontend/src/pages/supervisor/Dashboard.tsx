@@ -130,8 +130,7 @@ export default function SupervisorPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
-      <Header name="Supervisor" role="Supervisor" onLogout={logout} />
-
+    <Header />
       <div style={{ padding: "32px 32px 0" }}>
         <h2 style={{ marginBottom: 20 }}>Incidentes del área</h2>
 

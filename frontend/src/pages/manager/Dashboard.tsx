@@ -88,7 +88,7 @@ export default function UserManagement() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
-      <Header userName="Laura Díaz" userRole="Gerente" navLinks={navLinks} />
+      <Header navLinks={navLinks} />
 
       <div style={{ padding: "32px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>

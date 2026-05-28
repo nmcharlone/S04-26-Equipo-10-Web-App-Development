@@ -1,19 +1,26 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 import { Activity, LogOut } from "lucide-react";
 
-interface HeaderProps {
-  name: string;
-  role: string;
-  onLogout?: () => void;
-}
+// Mapeo de roles del contexto (string) a etiqueta en español
+const roleMap: Record<string, string> = {
+  operator: "Operador",
+  technician: "Técnico",
+  supervisor: "Supervisor",
+  manager: "Gerente",
+};
 
-export default function Header({ name, role, onLogout }: HeaderProps) {
+export default function Header() {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    if (onLogout) onLogout(); // limpia el estado global
-    navigate("/login");       // redirige al login
+    logout();
+    navigate("/login");
   };
+
+  const fullName = user ? `${user.name} ${user.lastname}` : "Usuario";
+  const role = user ? roleMap[user.role] || user.role : "";
 
   return (
     <nav style={{
@@ -24,7 +31,6 @@ export default function Header({ name, role, onLogout }: HeaderProps) {
       padding: "0 24px",
       height: 64,
     }}>
-      {/* Logo + nombre */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{
           width: 40, height: 40, borderRadius: 10,
@@ -36,19 +42,12 @@ export default function Header({ name, role, onLogout }: HeaderProps) {
         <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>OpsCore</span>
       </div>
 
-      {/* Usuario + logout */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{ textAlign: "right" }}>
-          <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{name}</div>
+          <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{fullName}</div>
           <div style={{ color: "#9ca3af", fontSize: 12 }}>{role}</div>
         </div>
-        <button
-          onClick={handleLogout}
-          style={{
-            background: "none", border: "none", cursor: "pointer",
-            display: "flex", alignItems: "center", padding: 0,
-          }}
-        >
+        <button onClick={handleLogout} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
           <LogOut size={20} color="#9ca3af" />
         </button>
       </div>

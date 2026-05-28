@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 import { Activity, LogOut } from "lucide-react";
 
 interface NavLink {
@@ -8,19 +9,27 @@ interface NavLink {
 }
 
 interface HeaderProps {
-  userName: string;
-  userRole: string;
   navLinks?: NavLink[];
-  onLogout?: () => void;
 }
 
-export default function Header({ userName, userRole, navLinks, onLogout }: HeaderProps) {
+const roleMap: Record<string, string> = {
+  operator: "Operador",
+  technician: "Técnico",
+  supervisor: "Supervisor",
+  manager: "Gerente",
+};
+
+export default function Header({ navLinks }: HeaderProps) {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    if (onLogout) onLogout();
+    logout();
     navigate("/login");
   };
+
+  const fullName = user ? `${user.name} ${user.lastname}` : "Usuario";
+  const role = user ? roleMap[user.role] || user.role : "";
 
   return (
     <nav style={{
@@ -51,7 +60,7 @@ export default function Header({ userName, userRole, navLinks, onLogout }: Heade
         </button>
 
         {/* Navegación interna */}
-        {navLinks && (
+        {navLinks && navLinks.length > 0 && (
           <div style={{ display: "flex", gap: 8 }}>
             {navLinks.map(link => (
               <button
@@ -76,8 +85,8 @@ export default function Header({ userName, userRole, navLinks, onLogout }: Heade
       {/* Usuario + logout */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{ textAlign: "right" }}>
-          <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{userName}</div>
-          <div style={{ color: "#9ca3af", fontSize: 12 }}>{userRole}</div>
+          <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{fullName}</div>
+          <div style={{ color: "#9ca3af", fontSize: 12 }}>{role}</div>
         </div>
         <button
           onClick={handleLogout}
