@@ -1,90 +1,125 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/manager/Header";
+import BarChart from "../../components/charts/BarChart";
 import KpiGrid from "../../components/charts/KpiGrid";
-import UserModal from "../../components/manager/UserModal";
-import { getUsuarios, toggleUsuarioActivo } from "../../services/usuariosService";
-import type { Usuario } from "../../services/usuariosService";
-import { Users, UserCheck, UserX, Pencil, UserPlus } from "lucide-react";
+import EstadoBadge from "../../components/ui/EstadoBadge";
+import AreaModal from "../../components/manager/AreaModal";
+import { getIncidentes } from "../../services/reportesService";
+import type { Incidente } from "../../services/reportesService";
+import { getSummary } from "../../services/metricasService";
+import type { Summary } from "../../services/metricasService";
+import { getAreas, createArea, updateArea, deleteArea } from "../../services/areaService";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
-const roleMap: Record<number, string> = {
-  1: "Operador",
-  2: "Técnico",
-  3: "Supervisor",
-  4: "Gerente",
+// Mapeo de estados
+const statusMap: Record<number, string> = {
+  1: "Abierto",
+  2: "Asignado",
+  3: "En proceso",
+  4: "Solucionado",
+  5: "Cerrado",
 };
 
-export default function UserManagement() {
+// Mapeo fijo de tipos de incidente
+const staticTypeMap: Record<number, string> = {
+  1: "HARDWARE",
+  2: "SOFTWARE",
+  3: "NETWORK",
+};
+
+export default function ManagerPage() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState<"dashboard" | "users">("users");
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [activeNav, setActiveNav] = useState<"dashboard" | "users">("dashboard");
+  const [incidentes, setIncidentes] = useState<Incidente[]>([]);
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [areas, setAreas] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal
-  const [userModalOpen, setUserModalOpen] = useState(false);
-  const [userModalMode, setUserModalMode] = useState<"create" | "edit" | "delete">("create");
-  const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
-
-  const fetchUsuarios = () => {
-    getUsuarios()
-      .then((res) => setUsuarios(res.users))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  };
+  // Modal de área
+  const [areaModalOpen, setAreaModalOpen] = useState(false);
+  const [areaModalMode, setAreaModalMode] = useState<"add" | "edit">("add");
+  const [areaModalInitial, setAreaModalInitial] = useState("");
+  const [editingAreaId, setEditingAreaId] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchUsuarios();
+    Promise.all([
+      getIncidentes(),
+      getSummary(),
+      getAreas(),
+    ])
+      .then(([inc, sum, a]) => {
+        setIncidentes(inc);
+        setSummary(sum.summary);
+        setAreas(a.areas);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
-  const totalUsuarios = usuarios.length;
+  // KPIs desde métricas
+  const kpis = summary ? [
+    { label: "Incidentes creados",   value: summary.incidents.created,   icon: "📋" },
+    { label: "Incidentes resueltos",  value: summary.incidents.resolved,  icon: "✅" },
+    { label: "Tasa de resolución",   value: `${summary.resolution_rate}%`, icon: "📊" },
+    { label: "Tiempo promedio (h)",  value: summary.average_resolution_hours, icon: "⏱️" },
+  ] : [];
+
+  const barData = summary ? [
+    { label: "Creados",   value: summary.incidents.created, max: summary.incidents.created || 1 },
+    { label: "Resueltos", value: summary.incidents.resolved, max: summary.incidents.created || 1 },
+  ] : [];
 
   const handleNav = (tab: "dashboard" | "users") => {
     setActiveNav(tab);
-    if (tab === "dashboard") navigate("/manager");
+    if (tab === "users") navigate("/manager/users");
+    else navigate("/manager");
   };
-
-  const openAddUser = () => {
-    setUserModalMode("create");
-    setSelectedUser(null);
-    setUserModalOpen(true);
-  };
-
-  const openEditUser = (id: number) => {
-    const user = usuarios.find((u) => u.id === id);
-    if (!user) return;
-    setSelectedUser(user);
-    setUserModalMode("edit");
-    setUserModalOpen(true);
-  };
-
-  const handleUserSubmit = async (formData: any) => {
-    // La lógica de creación/edición se manejará con los endpoints reales
-    setUserModalOpen(false);
-    fetchUsuarios();
-  };
-
-  const initialData = selectedUser
-    ? {
-        nombre: selectedUser.name,
-        email: "",
-        contrasena: "",
-        rol: roleMap[selectedUser.role_id] || "Operador",
-        area: "",
-      }
-    : ({} as any);
 
   const navLinks = [
     { label: "Dashboard", path: "/manager", active: activeNav === "dashboard" },
     { label: "Gestión de usuarios", path: "/manager/users", active: activeNav === "users" },
   ];
 
-  const kpiItems = [
-    { label: "Total de usuarios", value: totalUsuarios, icon: <Users size={28} color="#111827" />, iconBg: "#e0f2fe" },
-    { label: "Usuarios activos", value: totalUsuarios, icon: <UserCheck size={28} color="#10b981" />, iconBg: "#d1fae5" },
-    { label: "Usuarios inactivos", value: 0, icon: <UserX size={28} color="#ef4444" />, iconBg: "#fee2e2" },
-  ];
+  const openAddArea = () => {
+    setAreaModalMode("add");
+    setAreaModalInitial("");
+    setEditingAreaId(null);
+    setAreaModalOpen(true);
+  };
 
-  if (loading) return <div style={{ padding: 32 }}>Cargando usuarios...</div>;
+  const openEditArea = (area: { id: number; name: string }) => {
+    setAreaModalMode("edit");
+    setAreaModalInitial(area.name);
+    setEditingAreaId(area.id);
+    setAreaModalOpen(true);
+  };
+
+  const handleAreaSubmit = async (nombre: string) => {
+    try {
+      if (areaModalMode === "add") {
+        await createArea(nombre);
+      } else if (editingAreaId !== null) {
+        await updateArea(editingAreaId, nombre);
+      }
+      const res = await getAreas();
+      setAreas(res.areas);
+    } catch (err) {
+      console.error("Error al gestionar área:", err);
+    }
+  };
+
+  const handleDeleteArea = async (id: number) => {
+    try {
+      await deleteArea(id);
+      const res = await getAreas();
+      setAreas(res.areas);
+    } catch (err) {
+      console.error("Error al eliminar área:", err);
+    }
+  };
+
+  if (loading) return <div style={{ padding: 32 }}>Cargando...</div>;
 
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
@@ -92,46 +127,47 @@ export default function UserManagement() {
 
       <div style={{ padding: "32px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#111827" }}>Gestión de usuarios</h2>
-          <button
-            onClick={openAddUser}
-            style={{ padding: "8px 16px", background: "#111827", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
-          >
-            <UserPlus size={16} /> Añadir usuario
-          </button>
+          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#111827" }}>Métricas de reportes</h2>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={openAddArea} style={{ padding: "8px 16px", background: "#111827", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <Plus size={16} /> Añadir área
+            </button>
+          </div>
         </div>
 
-        <KpiGrid items={kpiItems} columns={3} />
+        {kpis.length > 0 && <KpiGrid items={kpis} />}
+        {barData.length > 0 && <BarChart title="Gráfico de incidentes" data={barData} />}
 
-        <div style={{ background: "#fff", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+        {/* Tabla de incidentes */}
+        <div style={{ background: "#fff", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", marginTop: 24 }}>
           <div style={{ background: "#10b981", padding: "14px 20px" }}>
-            <span style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Usuarios</span>
+            <span style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Incidentes</span>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "#7BC6B1" }}>
-                  {["NOMBRE", "APELLIDO", "ROL", "ÁREA", "ESTADO", "ACCIONES"].map((col) => (
-                    <th key={col} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
-                      {col}
-                    </th>
+                  {["ID", "TIPO", "ÁREA", "DESCRIPCIÓN", "ESTADO", "FECHA"].map(col => (
+                    <th key={col} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{col}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {usuarios.map((u, i) => (
-                  <tr key={u.id} style={{ borderBottom: "1px solid #f3f4f6", background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                    <td style={{ padding: "14px 16px", fontSize: 13, color: "#111827" }}>{u.name}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 13, color: "#111827" }}>{u.lastname}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 13, color: "#374151" }}>{roleMap[u.role_id] || u.role_id}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 13, color: "#374151" }}>{u.area_id}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 13, color: "#10b981", fontWeight: 600 }}>
-                      Activo
+                {incidentes.map((inc, i) => (
+                  <tr key={inc.id} style={{ borderBottom: "1px solid #f3f4f6", background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                    <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 500 }}>{inc.id}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 13 }}>
+                      {staticTypeMap[inc.type_id] || inc.type_id}
                     </td>
+                    <td style={{ padding: "14px 16px", fontSize: 13 }}>
+                      {areas.find(a => a.id === inc.area_id)?.name || inc.area_id}
+                    </td>
+                    <td style={{ padding: "14px 16px", fontSize: 13, maxWidth: 240 }}>{inc.description}</td>
                     <td style={{ padding: "14px 16px" }}>
-                      <button onClick={() => openEditUser(u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }} title="Editar">
-                        <Pencil size={16} color="#6b7280" />
-                      </button>
+                      <EstadoBadge estado={statusMap[inc.status_id] || inc.status_id.toString()} />
+                    </td>
+                    <td style={{ padding: "14px 16px", fontSize: 13 }}>
+                      {inc.created_at ? new Date(inc.created_at).toLocaleDateString() : "—"}
                     </td>
                   </tr>
                 ))}
@@ -139,15 +175,46 @@ export default function UserManagement() {
             </table>
           </div>
         </div>
+
+        {/* Gestión de áreas */}
+        <div style={{ background: "#fff", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", marginTop: 24 }}>
+          <div style={{ background: "#10b981", padding: "14px 20px" }}>
+            <span style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Áreas</span>
+          </div>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#7BC6B1" }}>
+                <th style={{ padding: "10px 16px", textAlign: "left" }}>ID</th>
+                <th style={{ padding: "10px 16px", textAlign: "left" }}>Nombre</th>
+                <th style={{ padding: "10px 16px", textAlign: "left" }}>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {areas.map(area => (
+                <tr key={area.id}>
+                  <td style={{ padding: "10px 16px" }}>{area.id}</td>
+                  <td style={{ padding: "10px 16px" }}>{area.name}</td>
+                  <td style={{ padding: "10px 16px" }}>
+                    <button onClick={() => openEditArea(area)} style={{ marginRight: 8, background: "none", border: "none", cursor: "pointer" }}>
+                      <Pencil size={14} />
+                    </button>
+                    <button onClick={() => handleDeleteArea(area.id)} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                      <Trash2 size={14} color="#ef4444" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <UserModal
-        open={userModalOpen}
-        mode={userModalMode}
-        initialData={initialData}
-        areas={[]} // temporal, luego se obtienen de la API
-        onClose={() => setUserModalOpen(false)}
-        onSubmit={handleUserSubmit}
+      <AreaModal
+        open={areaModalOpen}
+        mode={areaModalMode}
+        initialValue={areaModalInitial}
+        onClose={() => setAreaModalOpen(false)}
+        onSubmit={handleAreaSubmit}
       />
     </div>
   );

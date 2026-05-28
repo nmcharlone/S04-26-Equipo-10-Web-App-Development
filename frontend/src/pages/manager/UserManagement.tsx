@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/layout/manager/Header";
 import KpiGrid from "../../components/charts/KpiGrid";
 import UserModal from "../../components/manager/UserModal";
@@ -16,7 +16,10 @@ const roleMap: Record<number, string> = {
 
 export default function UserManagement() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState<"dashboard" | "users">("users");
+  const location = useLocation();
+  const [activeNav, setActiveNav] = useState<"dashboard" | "users">(
+    location.pathname === "/manager/users" ? "users" : "dashboard"
+  );
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,6 +28,12 @@ export default function UserManagement() {
   const [userModalMode, setUserModalMode] = useState<"create" | "edit" | "delete">("create");
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
 
+  // Sincronizar activeNav con la ruta real
+  useEffect(() => {
+    setActiveNav(location.pathname === "/manager/users" ? "users" : "dashboard");
+  }, [location.pathname]);
+
+  // Cargar usuarios
   const fetchUsuarios = () => {
     getUsuarios()
       .then((res) => setUsuarios(res.users))
@@ -41,6 +50,7 @@ export default function UserManagement() {
   const handleNav = (tab: "dashboard" | "users") => {
     setActiveNav(tab);
     if (tab === "dashboard") navigate("/manager");
+    else navigate("/manager/users");
   };
 
   const openAddUser = () => {
@@ -58,7 +68,7 @@ export default function UserManagement() {
   };
 
   const handleUserSubmit = async (formData: any) => {
-    // La lógica de creación/edición se manejará con los endpoints reales
+    // Lógica de creación/edición (por ahora mock)
     setUserModalOpen(false);
     fetchUsuarios();
   };
@@ -78,7 +88,6 @@ export default function UserManagement() {
     { label: "Gestión de usuarios", path: "/manager/users", active: activeNav === "users" },
   ];
 
-  // Solo mostramos el total de usuarios como KPI
   const kpiItems = [
     { label: "Total de usuarios", value: totalUsuarios, icon: <Users size={28} color="#111827" />, iconBg: "#e0f2fe" },
   ];
@@ -88,6 +97,7 @@ export default function UserManagement() {
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
       <Header navLinks={navLinks} />
+
       <div style={{ padding: "32px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#111827" }}>Gestión de usuarios</h2>

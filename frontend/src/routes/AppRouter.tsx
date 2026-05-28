@@ -1,11 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+// Páginas (imports en minúscula)
 import Login from "../pages/public/Login";
-import OperatorPage from "../pages/operator/Dashboard";
-import SupervisorPage from "../pages/supervisor/Dashboard";
-import TechnicianPage from "../pages/technician/Dashboard";
-import ManagerPage from "../pages/manager/Dashboard";
+import OperatorPage from "../pages/operator/dashboard";
+import SupervisorPage from "../pages/supervisor/dashboard";
+import TechnicianPage from "../pages/technician/dashboard";
+import ManagerPage from "../pages/manager/dashboard";
 import UserManagement from "../pages/manager/UserManagement";
 
 type Role = "operator" | "supervisor" | "technician" | "manager";
@@ -20,7 +21,8 @@ function PrivateRoute({
   const { user } = useAuth();
 
   if (!user) return <Navigate to="/login" replace />;
-  if (!allowedRoles.includes(user.role as Role)) return <Navigate to="/unauthorized" replace />;
+  if (!allowedRoles.includes(user.role as Role))
+    return <Navigate to="/unauthorized" replace />;
 
   return <>{children}</>;
 }
@@ -62,7 +64,7 @@ export default function AppRouter() {
           }
         />
 
-        {/* Manager */}
+        {/* Manager (dashboard) */}
         <Route
           path="/manager"
           element={
@@ -71,6 +73,8 @@ export default function AppRouter() {
             </PrivateRoute>
           }
         />
+
+        {/* Manager (gestión de usuarios) */}
         <Route
           path="/manager/users"
           element={
@@ -81,7 +85,10 @@ export default function AppRouter() {
         />
 
         {/* Fallbacks */}
-        <Route path="/unauthorized" element={<div style={{ padding: 32 }}>No tenés permiso para acceder a esta página.</div>} />
+        <Route
+          path="/unauthorized"
+          element={<div style={{ padding: 32 }}>No tenés permiso para acceder a esta página.</div>}
+        />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
