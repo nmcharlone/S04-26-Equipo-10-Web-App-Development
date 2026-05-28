@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { Activity, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 
-// Mapeo de roles del contexto (string) a etiqueta en español
 const roleMap: Record<string, string> = {
   operator: "Operador",
   technician: "Técnico",
@@ -24,7 +23,7 @@ export default function Header() {
 
   return (
     <nav style={{
-      background: "#111827",
+      background: "#1a1a2e",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
@@ -32,13 +31,11 @@ export default function Header() {
       height: 64,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 10,
-          background: "#10b981",
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          <Activity size={22} color="#fff" />
-        </div>
+        <img
+          src="/assets/header.png"
+          alt="Resolva Logo"
+          style={{ width: 42, height: 42, borderRadius: 8 }}
+        />
         <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>Resolva</span>
       </div>
 

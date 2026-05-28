@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { Activity, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 
 interface NavLink {
   label: string;
@@ -33,7 +33,7 @@ export default function Header({ navLinks }: HeaderProps) {
 
   return (
     <nav style={{
-      background: "#111827",
+      background: "#1a1a2e",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
@@ -41,7 +41,7 @@ export default function Header({ navLinks }: HeaderProps) {
       height: 64,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-        {/* Logo */}
+        {/* Logo con imagen */}
         <button
           onClick={() => navigate("/")}
           style={{
@@ -49,13 +49,11 @@ export default function Header({ navLinks }: HeaderProps) {
             display: "flex", alignItems: "center", gap: 12, padding: 0,
           }}
         >
-          <div style={{
-            width: 40, height: 40, borderRadius: 10,
-            background: "#10b981",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <Activity size={22} color="#fff" />
-          </div>
+          <img
+            src="/assets/header.png"
+            alt="Resolva Logo"
+            style={{ width: 42, height: 42, borderRadius: 8 }}
+          />
           <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>Resolva</span>
         </button>
 

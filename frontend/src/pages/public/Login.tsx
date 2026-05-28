@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../../components/ui/Input";
 import { login as loginService, me } from "../../services/authService";
-import { Activity, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 
 const roleMap: Record<number, string> = {
   1: "operator",
@@ -24,19 +24,14 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return; // 🔒 Evita doble envío
+    if (loading) return;
     setError("");
     setLoading(true);
 
     try {
-      // 1. Obtener token
       const { token } = await loginService({ name, lastname, password });
       localStorage.setItem("token", token);
-
-      // 2. Obtener datos del usuario
       const { user } = await me();
-
-      // 3. Guardar en contexto
       login(
         {
           id: user.id,
@@ -47,8 +42,6 @@ export default function Login() {
         },
         token
       );
-
-      // 4. Redirigir según rol
       const roleToPath: Record<string, string> = {
         operator: "/operator",
         technician: "/technician",
@@ -68,9 +61,11 @@ export default function Login() {
       <form onSubmit={handleSubmit} style={{ background: "#fff", padding: "32px", borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.10)", width: 340, display: "flex", flexDirection: "column", gap: 16 }}>
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", marginBottom: 8 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: "#10b981", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Activity size={28} color="#fff" />
-          </div>
+          <img
+            src="/assets/icon.png"
+            alt="Resolva Logo"
+            style={{ width: 48, height: 48, borderRadius: 12 }}
+          />
           <span style={{ color: "#111827", fontSize: 22, fontWeight: 700 }}>Resolva</span>
         </div>
 
@@ -95,19 +90,12 @@ export default function Login() {
           type="submit"
           disabled={loading}
           style={{
-            padding: "10px 0",
-            border: "none",
-            borderRadius: 8,
-            background: loading ? "#9ca3af" : "#111827",
-            color: "#fff",
-            fontSize: 14,
-            fontWeight: 600,
+            padding: "10px 0", border: "none", borderRadius: 8,
+            background: loading ? "#9ca3af" : "#1a1a2e",
+            color: "#fff", fontSize: 14, fontWeight: 600,
             cursor: loading ? "not-allowed" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            marginTop: 4,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: 6, marginTop: 4,
           }}
         >
           {loading ? "Ingresando..." : (
@@ -117,18 +105,6 @@ export default function Login() {
             </>
           )}
         </button>
-
-        <details style={{ fontSize: 12, color: "#6b7280", textAlign: "center", marginTop: 8 }}>
-          <summary style={{ cursor: "pointer", fontWeight: 500 }}>
-            Credenciales de prueba
-          </summary>
-          <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
-            <span><strong>Operador:</strong> Juan / Perez / 123456</span>
-            <span><strong>Técnico:</strong> Ana / Lopez / 123456</span>
-            <span><strong>Supervisor:</strong> Carlos / Ruiz / 123456</span>
-            <span><strong>Manager:</strong> Maria / Garcia / 123456</span>
-          </div>
-        </details>
       </form>
     </div>
   );
