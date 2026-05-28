@@ -56,7 +56,7 @@ export default function Header({ navLinks }: HeaderProps) {
           }}>
             <Activity size={22} color="#fff" />
           </div>
-          <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>OpsCore</span>
+          <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>Resolva</span>
         </button>
 
         {/* Navegación interna */}

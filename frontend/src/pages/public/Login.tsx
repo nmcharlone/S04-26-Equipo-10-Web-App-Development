@@ -71,7 +71,7 @@ export default function Login() {
           <div style={{ width: 48, height: 48, borderRadius: 12, background: "#10b981", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Activity size={28} color="#fff" />
           </div>
-          <span style={{ color: "#111827", fontSize: 22, fontWeight: 700 }}>OpsCore</span>
+          <span style={{ color: "#111827", fontSize: 22, fontWeight: 700 }}>Resolva</span>
         </div>
 
         <h2 style={{ margin: 0, textAlign: "center", fontSize: 20, fontWeight: 700, color: "#111827" }}>

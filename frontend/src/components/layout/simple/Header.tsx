@@ -39,7 +39,7 @@ export default function Header() {
         }}>
           <Activity size={22} color="#fff" />
         </div>
-        <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>OpsCore</span>
+        <span style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>Resolva</span>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
