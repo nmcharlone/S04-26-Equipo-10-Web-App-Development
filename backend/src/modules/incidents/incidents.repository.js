@@ -82,7 +82,7 @@ export default class IncidentsRepository {
 		WHERE id = ?
 	`,
 			)
-			.run(Number(user.user_id), id)
+			.run(Number(user.id), id)
 
 		return {
 			changes: result.changes,
