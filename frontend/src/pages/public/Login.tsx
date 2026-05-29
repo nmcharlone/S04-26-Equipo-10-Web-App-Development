@@ -76,8 +76,8 @@ export default function Login() {
           Ingresá tus credenciales
         </p>
 
-        <Input label="Nombre" placeholder="Juan" value={name} onChange={setName} required />
-        <Input label="Apellido" placeholder="Perez" value={lastname} onChange={setLastname} required />
+        <Input label="Nombre" placeholder="Nombre" value={name} onChange={setName} required />
+        <Input label="Apellido" placeholder="Apellido" value={lastname} onChange={setLastname} required />
         <Input label="Contraseña" type="password" placeholder="Contraseña" value={password} onChange={setPassword} required />
 
         {error && (
