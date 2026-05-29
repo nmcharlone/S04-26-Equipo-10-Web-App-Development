@@ -10,7 +10,7 @@ import type { Incidente } from "../../services/reportesService";
 import { getSummary } from "../../services/metricasService";
 import type { Summary } from "../../services/metricasService";
 import { getAreas, createArea, updateArea, deleteArea } from "../../services/areaService";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ClipboardList, CheckCircle, TrendingUp, Clock } from "lucide-react";
 
 // Mapeo de estados
 const statusMap: Record<number, string> = {
@@ -57,12 +57,12 @@ export default function ManagerPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // KPIs desde métricas
+  // KPIs con iconos de Lucide
   const kpis = summary ? [
-    { label: "Incidentes creados",   value: summary.incidents.created,   icon: "📋" },
-    { label: "Incidentes resueltos",  value: summary.incidents.resolved,  icon: "✅" },
-    { label: "Tasa de resolución",   value: `${summary.resolution_rate}%`, icon: "📊" },
-    { label: "Tiempo promedio (h)",  value: summary.average_resolution_hours, icon: "⏱️" },
+    { label: "Incidentes creados",   value: summary.incidents.created,   icon: <ClipboardList size={28} color="#111827" /> },
+    { label: "Incidentes resueltos",  value: summary.incidents.resolved,  icon: <CheckCircle size={28} color="#10b981" /> },
+    { label: "Tasa de resolución",   value: `${summary.resolution_rate}%`, icon: <TrendingUp size={28} color="#3b82f6" /> },
+    { label: "Tiempo promedio (h)",  value: summary.average_resolution_hours, icon: <Clock size={28} color="#f59e0b" /> },
   ] : [];
 
   const barData = summary ? [
@@ -129,7 +129,7 @@ export default function ManagerPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#111827" }}>Métricas de reportes</h2>
           <div style={{ display: "flex", gap: 10 }}>
-            <button onClick={openAddArea} style={{ padding: "8px 16px", background: "#111827", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+            <button onClick={openAddArea} style={{ padding: "8px 16px", background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
               <Plus size={16} /> Añadir área
             </button>
           </div>
