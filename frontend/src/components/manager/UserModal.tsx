@@ -222,18 +222,18 @@ function UserModal({
             }}
           />
 
-<input
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  placeholder="Apellido"
-  type="text"
-  style={{
-    padding: "10px 14px",
-    border: "1.5px solid #d1d5db",
-    borderRadius: 8,
-    fontSize: 14,
-  }}
-/>
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            type="email"
+            style={{
+              padding: "10px 14px",
+              border: "1.5px solid #d1d5db",
+              borderRadius: 8,
+              fontSize: 14,
+            }}
+          />
 
           <input
             value={contrasena}

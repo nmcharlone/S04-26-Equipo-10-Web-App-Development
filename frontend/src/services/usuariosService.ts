@@ -16,14 +16,6 @@ export interface CreateUsuarioPayload {
   area_id: number;
 }
 
-export interface UpdateUsuarioPayload {
-  name?: string;
-  lastname?: string;
-  password?: string;
-  role_id?: number;
-  area_id?: number;
-}
-
 export async function getUsuarios(): Promise<{ users: Usuario[] }> {
   return apiClient<{ users: Usuario[] }>("/users");
 }
@@ -33,16 +25,6 @@ export async function createUsuario(
 ): Promise<Usuario> {
   return apiClient<Usuario>("/users", {
     method: "POST",
-    body: data,
-  });
-}
-
-export async function updateUsuario(
-  id: number,
-  data: UpdateUsuarioPayload
-): Promise<Usuario> {
-  return apiClient<Usuario>(`/users/${id}`, {
-    method: "PATCH",
     body: data,
   });
 }

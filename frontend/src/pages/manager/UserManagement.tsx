@@ -3,12 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/manager/Header";
 import KpiGrid from "../../components/charts/KpiGrid";
 import UserModal from "../../components/manager/UserModal";
-import {
-  getUsuarios,
-  createUsuario,
-  updateUsuario,
-  toggleUsuarioActivo,
-} from "../../services/usuariosService";
+import { getUsuarios, createUsuario, toggleUsuarioActivo } from "../../services/usuariosService";
 import type { Usuario } from "../../services/usuariosService";
 import { Users, UserCheck, UserX, Pencil, Ban, UserPlus } from "lucide-react";
 
@@ -96,35 +91,29 @@ export default function UserManagement() {
 
   const handleUserSubmit = async (formData: any) => {
     try {
-      const payload = {
+      await createUsuario({
         name: formData.nombre,
         lastname: formData.apellido || formData.email || "",
         password: formData.contrasena,
         role_id: roleNameToId[formData.rol],
         area_id: areaNameToId[formData.area],
-      };
-  
-      if (userModalMode === "edit" && selectedUser) {
-        await updateUsuario(selectedUser.id, payload);
-      } else {
-        await createUsuario(payload);
-      }
+      });
   
       setUserModalOpen(false);
       fetchUsuarios();
     } catch (err) {
-      console.error("Error al guardar usuario:", err);
+      console.error("Error al crear usuario:", err);
     }
   };
   const initialData = selectedUser
-  ? {
-      nombre: selectedUser.name,
-      email: selectedUser.lastname, 
-      contrasena: "",
-      rol: roleMap[selectedUser.role_id] || "Operador",
-      area: "",
-    }
-  : ({} as any);
+    ? {
+        nombre: selectedUser.name,
+        email: "",
+        contrasena: "",
+        rol: roleMap[selectedUser.role_id] || "Operador",
+        area: "",
+      }
+    : ({} as any);
 
   const navLinks = [
     { label: "Dashboard", path: "/manager", active: activeNav === "dashboard" },
