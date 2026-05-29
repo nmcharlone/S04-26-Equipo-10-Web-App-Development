@@ -38,30 +38,14 @@ export default function SupervisorPage() {
     Promise.all([
       getIncidentes(),
       getUsuarios().then(res => {
-        // Filtrar solo técnicos (sin campo active, asumimos todos activos)
+        // Filtrar solo técnicos (asumimos todos activos)
         const tecnicosFiltrados = res.users.filter(u => u.role_id === 2);
         setTecnicos(tecnicosFiltrados);
       }),
       getAreas().then(res => setAreas(res.areas)),
       getRootCauses().then(setRootCauses),
     ])
-      .then(([inc]) => {
-        // Si no hay incidentes abiertos, agregamos uno de prueba
-        const hasOpen = inc.some((i: Incidente) => i.status_id === 1);
-        if (!hasOpen) {
-          inc.push({
-            id: 9999,
-            type_id: 1,
-            area_id: 1,
-            description: "INCIDENTE DE PRUEBA",
-            status_id: 1,
-            created_by: 1,
-            assigned_to: null,
-            created_at: new Date().toISOString(),
-          });
-        }
-        setIncidentes(inc);
-      })
+      .then(([inc]) => setIncidentes(inc))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -79,15 +63,6 @@ export default function SupervisorPage() {
   const handleAssignSubmit = async (data: { technician_id: number }) => {
     if (!selectedIncident) return;
     try {
-      if (selectedIncident.id === 9999) {
-        setIncidentes(prev =>
-          prev.map(inc =>
-            inc.id === 9999 ? { ...inc, status_id: 2, assigned_to: data.technician_id } : inc
-          )
-        );
-        setAssignModalOpen(false);
-        return;
-      }
       await assignIncidente(selectedIncident.id, data.technician_id);
       setIncidentes(prev =>
         prev.map(inc =>
@@ -105,15 +80,6 @@ export default function SupervisorPage() {
   const handleResolveSubmit = async (data: { solution: string; root_cause_id: number }) => {
     if (!selectedIncident) return;
     try {
-      if (selectedIncident.id === 9999) {
-        setIncidentes(prev =>
-          prev.map(inc =>
-            inc.id === 9999 ? { ...inc, status_id: 4 } : inc
-          )
-        );
-        setResolveModalOpen(false);
-        return;
-      }
       await resolveIncidente(selectedIncident.id, data.solution, data.root_cause_id);
       setIncidentes(prev =>
         prev.map(inc =>
@@ -130,7 +96,7 @@ export default function SupervisorPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "Inter, sans-serif" }}>
-    <Header />
+      <Header />
       <div style={{ padding: "32px 32px 0" }}>
         <h2 style={{ marginBottom: 20 }}>Incidentes del área</h2>
 
